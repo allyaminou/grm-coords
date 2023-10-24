@@ -1,0 +1,90 @@
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Grm Copy Coords</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    </head>
+
+    <style>
+        @import "https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap";
+        
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+    </style>
+
+    <body>
+        <div id = "container" class="w-[100%] h-[100%] hidden">
+            <div class="w-[100%] h-[100%] flex justify-center items-center flex-col gap-[1vh]">
+                <div class="w-[30vw] h-[10vh] bg-zinc-800 rounded-xl flex items-center justify-center">
+                    <h1 class="text-white text-[5vmin] font-[600] uppercase">COPYCOORDS</h1>
+                </div>  
+
+                <div class="w-[30vw] h-fit gap-[1vh] px-[1vw] py-[2vh] bg-zinc-800 rounded-xl flex flex-col">
+                    <div class="flex flex-col">
+                        <h1 class="text-zinc-200">Vector3</h1>
+                        <div id="vector3" class="text-zinc-200 px-[0.5vw] w-[100%] h-fit min-h-[2.6vh] py-[0.4vh] bg-zinc-700 rounded-md hover:opacity-60 transition-all cursor-pointer" onclick="copyToClipboard('vector3')">vector3(0.0, 0.0, 0.0)</div>
+                    </div>
+
+                    <div class="flex flex-col">
+                        <h1 class="text-zinc-200">Vector4</h1>
+                        <div id="vector4" class="text-zinc-200 px-[0.5vw] w-[100%] h-fit min-h-[2.6vh] py-[0.4vh] bg-zinc-700 rounded-md hover:opacity-60 transition-all cursor-pointer" onclick="copyToClipboard('vector4')">vector4(0.0, 0.0, 0.0, 0.0)</div>
+                    </div>
+
+                    <div class="flex flex-col">
+                        <h1 class="text-zinc-200">Xyz</h1>
+                        <div id="xyz" class="text-zinc-200 px-[0.5vw] w-[100%] h-fit min-h-[2.6vh] py-[0.4vh] bg-zinc-700 rounded-md hover:opacity-60 transition-all cursor-pointer" onclick="copyToClipboard('xyz')">{x = 0.0, y = 0.0, z = 0.0}</div>
+                    </div>
+
+                    <div class="flex flex-col">
+                        <h1 class="text-zinc-200">Heading</h1>
+                        <div id="heading" class="text-zinc-200 px-[0.5vw] w-[100%] h-fit min-h-[2.6vh] py-[0.4vh] bg-zinc-700 rounded-md hover:opacity-60 transition-all cursor-pointer" onclick="copyToClipboard('heading')">0.0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    
+    <script>
+        const copyToClipboard = str => {
+            const text = document.getElementById(str).innerHTML
+            const el = document.createElement('textarea');
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+        }
+
+        window.addEventListener('message', function(event) {
+            const action = event.data.action
+            switch(action) {
+                case 'open': 
+                    const documents = ['vector3', 'vector4', 'xyz', 'heading']
+
+                    for(let i = 0; i < documents.length; i ++) {
+                        
+                        const text = document.getElementById(documents[i])
+                        text.innerHTML = event.data[documents[i]]
+                    }
+                    
+                    $('#container').fadeIn(500)
+                break
+                
+                case 'close':
+                    $('#container').fadeOut(500)
+                break
+            } 
+        })
+        
+        window.addEventListener('keydown', function(event) {
+            switch(event.keyCode) {
+                case 27: 
+                    $('#container').fadeOut(500)
+                    $.post('https://' + GetParentResourceName() + '/close')
+                break
+            }
+        })
+    </script>
+</html>
